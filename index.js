@@ -46,13 +46,23 @@ async function run() {
             res.send(service);
         });
 
-        // review api
+        // review post api
         app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             console.log(review)
             res.send(result);
         })
+
+        // review get api
+        app.get('/reviews/:id', async (req,res)=>{
+            const id = req.params.id;
+            const query = {service: id}
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        })
+
     }
     finally {
 
