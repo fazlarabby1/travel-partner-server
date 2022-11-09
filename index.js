@@ -106,6 +106,25 @@ async function run() {
             res.send(review);
         })
 
+        // update review api
+        app.put('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const newReview = req.body;
+            const option = {upsert: true};
+            const updateReview = {
+                $set: {
+                    name: newReview.name,
+                    photo: newReview.photo,
+                    rating: newReview.rating,
+                    reviewDetails: newReview.reviewDetails
+                }
+            };
+            const result = await reviewCollection.updateOne(query, updateReview, option);
+            console.log(newReview)
+            res.send(result);
+        })
+
         // review delete api
         app.delete('/reviews/:id', async (req, res) => {
             const id = req.params.id;
@@ -113,6 +132,7 @@ async function run() {
             const result = await reviewCollection.deleteOne(query);
             res.send(result);
         })
+
 
     }
     finally {
