@@ -84,7 +84,6 @@ async function run() {
         app.post('/reviews', verifyJWT, async (req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
-            console.log(review)
             res.send(result);
         })
 
@@ -106,22 +105,28 @@ async function run() {
             res.send(review);
         })
 
+        // best reviews api
+        app.get('/reviewsB', async (req, res) => {
+            const query = { rating: {$gt: "4"} };
+            const cursor = reviewCollection.find(query);
+            const review = await cursor.toArray();
+            res.send(review);
+        })
+
         // update review api
-        app.put('/reviews/:id', async (req, res) => {
+        app.patch('/reviews/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
             const newReview = req.body;
-            const option = {upsert: true};
+            console.log(id, newReview);
+            const filter = { _id: ObjectId(id) };
+            const option = { upsert: true };
             const updateReview = {
                 $set: {
-                    name: newReview.name,
-                    photo: newReview.photo,
                     rating: newReview.rating,
                     reviewDetails: newReview.reviewDetails
                 }
             };
-            const result = await reviewCollection.updateOne(query, updateReview, option);
-            console.log(newReview)
+            const result = await reviewCollection.updateOne(filter, updateReview, option);
             res.send(result);
         })
 
